@@ -1,0 +1,20 @@
+{
+  "name": "text",
+  "version": "0.1.0",
+  "description": "Helper methods for Text related things.",
+  "keywords": [],
+  "license": "LGPL-3.0-or-later",
+  "author": {
+    "name": "Sirius",
+    "email": "sirius@siri.ws",
+    "url": "https://siri.ws"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fabriccore/text-js"
+  },
+  "dependencies": {
+    "rinode": "0.1.0",
+    "yarn-extra": "0.1.0"
+  }
+}

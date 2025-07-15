@@ -22,31 +22,85 @@ let { Identifier } = Yarn.net.minecraft.util;
 let client = Yarn.net.minecraft.client.MinecraftClient.getInstance();
 
 function createClickEvent(ev = {}) {
-    if (typeof ev == "string") {
-        if (ev.startsWith("/")) return new ClickEvent.RunCommand(ev.slice(1));
-        if (ev.startsWith("http://") || ev.startsWith("https://"))
-            return new ClickEvent.OpenUrl(ev);
-    }
+    if (ClickEvent.ChangePage != undefined) {
+        if (typeof ev == "string") {
+            if (ev.startsWith("/"))
+                return new ClickEvent.RunCommand(ev.slice(1));
+            if (ev.startsWith("http://") || ev.startsWith("https://"))
+                return new ClickEvent.OpenUrl(ev);
+        }
 
-    if (ev.page) return new ClickEvent.ChangePage(ev.page);
-    if (ev.copy) return new ClickEvent.CopyToClipboard(ev.copy);
-    if (ev.file) return new ClickEvent.OpenFile(ev.file);
-    if (ev.url) return new ClickEvent.OpenUrl(new URI(ev.url));
-    if (ev.run) return new ClickEvent.RunCommand(ev.run);
-    if (ev.suggest) return new ClickEvent.SuggestCommand(ev.suggest);
+        if (ev.page) return new ClickEvent.ChangePage(ev.page);
+        if (ev.copy) return new ClickEvent.CopyToClipboard(ev.copy);
+        if (ev.file) return new ClickEvent.OpenFile(ev.file);
+        if (ev.url) return new ClickEvent.OpenUrl(new URI(ev.url));
+        if (ev.run) return new ClickEvent.RunCommand(ev.run);
+        if (ev.suggest) return new ClickEvent.SuggestCommand(ev.suggest);
+    } else if (
+        ClickEvent.Action != undefined &&
+        ClickEvent.Action.CHANGE_PAGE != undefined
+    ) {
+        if (typeof ev == "string") {
+            if (ev.startsWith("/"))
+                return new ClickEvent(
+                    ClickEvent.Action.RUN_COMMAND,
+                    ev.slice(1),
+                );
+            if (ev.startsWith("http://") || ev.startsWith("https://"))
+                return new ClickEvent(ClickEvent.Action.OPEN_URL, ev);
+        }
+
+        if (ev.page)
+            return new ClickEvent(ClickEvent.Action.CHANGE_PAGE, ev.page);
+        if (ev.copy)
+            return new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ev.copy);
+        if (ev.file)
+            return new ClickEvent(ClickEvent.Action.OPEN_FILE, ev.file);
+        if (ev.url)
+            return new ClickEvent(ClickEvent.Action.OPEN_URL, new URI(ev.url));
+        if (ev.run)
+            return new ClickEvent(ClickEvent.Action.RUN_COMMAND, ev.run);
+        if (ev.suggest)
+            return new ClickEvent(
+                ClickEvent.Action.SUGGEST_COMMAND,
+                ev.suggest,
+            );
+    }
 }
 
 function createHoverEvent(ev = {}) {
-    if (typeof ev == "string") {
-        return new HoverEvent.ShowText(Text.literal(ev));
-    }
-    if (ev.content) {
-        return new HoverEvent.ShowText(createText(ev));
-    }
+    if (HoverEvent.ShowText != undefined) {
+        if (typeof ev == "string") {
+            return new HoverEvent.ShowText(Text.literal(ev));
+        }
+        if (ev.content) {
+            return new HoverEvent.ShowText(createText(ev));
+        }
 
-    if (ev.entity) return new HoverEvent.ShowEntity(ev.entity);
-    if (ev.item) return new HoverEvent.ShowItem(ev.item);
-    if (ev.text) return new HoverEvent.ShowText(ev.text);
+        if (ev.entity) return new HoverEvent.ShowEntity(ev.entity);
+        if (ev.item) return new HoverEvent.ShowItem(ev.item);
+        if (ev.text) return new HoverEvent.ShowText(ev.text);
+    } else if (
+        HoverEvent.Action != undefined &&
+        HoverEvent.Action.SHOW_TEXT != undefined
+    ) {
+        if (typeof ev == "string") {
+            return new HoverEvent(
+                HoverEvent.Action.SHOW_TEXT,
+                Text.literal(ev),
+            );
+        }
+        if (ev.content) {
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, createText(ev));
+        }
+
+        if (ev.entity)
+            return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, ev.entity);
+        if (ev.item)
+            return new HoverEvent(HoverEvent.Action.SHOW_ITEM, ev.item);
+        if (ev.text)
+            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, ev.text);
+    }
 }
 
 function createStyle(chunk = {}) {
@@ -81,10 +135,14 @@ function createStyle(chunk = {}) {
         style = style.withFont(ident);
     }
 
-    if (chunk.click)
-        style = style.withClickEvent(createClickEvent(chunk.click) ?? null);
-    if (chunk.hover)
-        style = style.withHoverEvent(createHoverEvent(chunk.hover) ?? null);
+    if (chunk.click) {
+        let click = createClickEvent(chunk.click);
+        if (click) style = style.withClickEvent(click);
+    }
+    if (chunk.hover) {
+        let hover = createHoverEvent(chunk.hover);
+        if (hover) style = style.withHoverEvent(hover);
+    }
 
     return style;
 }

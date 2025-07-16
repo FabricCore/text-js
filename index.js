@@ -21,6 +21,8 @@ let { Identifier } = Yarn.net.minecraft.util;
 
 let client = Yarn.net.minecraft.client.MinecraftClient.getInstance();
 
+// missings fields in yarn mappings for some reason
+// so had to use raw field names
 function createClickEvent(ev = {}) {
     if (ClickEvent.ChangePage != undefined) {
         if (typeof ev == "string") {
@@ -38,34 +40,33 @@ function createClickEvent(ev = {}) {
         if (ev.suggest) return new ClickEvent.SuggestCommand(ev.suggest);
     } else if (
         ClickEvent.Action != undefined &&
-        ClickEvent.Action.CHANGE_PAGE != undefined
+        ClickEvent.Action.field_11748 != undefined
     ) {
         if (typeof ev == "string") {
             if (ev.startsWith("/"))
-                return new ClickEvent(
-                    ClickEvent.Action.RUN_COMMAND,
-                    ev.slice(1),
-                );
+                return new ClickEvent(ClickEvent.Action.field_11750, ev);
             if (ev.startsWith("http://") || ev.startsWith("https://"))
-                return new ClickEvent(ClickEvent.Action.OPEN_URL, ev);
+                return new ClickEvent(ClickEvent.Action.field_11749, ev);
         }
 
         if (ev.page)
-            return new ClickEvent(ClickEvent.Action.CHANGE_PAGE, ev.page);
+            return new ClickEvent(ClickEvent.Action.field_11748, ev.page);
         if (ev.copy)
-            return new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ev.copy);
+            return new ClickEvent(ClickEvent.Action.field_21462, ev.copy);
         if (ev.file)
-            return new ClickEvent(ClickEvent.Action.OPEN_FILE, ev.file);
+            return new ClickEvent(ClickEvent.Action.field_11746, ev.file);
         if (ev.url)
-            return new ClickEvent(ClickEvent.Action.OPEN_URL, new URI(ev.url));
-        if (ev.run)
-            return new ClickEvent(ClickEvent.Action.RUN_COMMAND, ev.run);
-        if (ev.suggest)
             return new ClickEvent(
-                ClickEvent.Action.SUGGEST_COMMAND,
-                ev.suggest,
+                ClickEvent.Action.field_11749,
+                new URI(ev.url),
             );
+        if (ev.run)
+            return new ClickEvent(ClickEvent.Action.field_11750, `/${ev.run}`);
+        if (ev.suggest)
+            return new ClickEvent(ClickEvent.Action.field_11745, ev.suggest);
     }
+
+    return ev;
 }
 
 function createHoverEvent(ev = {}) {
@@ -82,24 +83,27 @@ function createHoverEvent(ev = {}) {
         if (ev.text) return new HoverEvent.ShowText(ev.text);
     } else if (
         HoverEvent.Action != undefined &&
-        HoverEvent.Action.SHOW_TEXT != undefined
+        HoverEvent.Action.field_24342 != undefined
     ) {
         if (typeof ev == "string") {
             return new HoverEvent(
-                HoverEvent.Action.SHOW_TEXT,
+                HoverEvent.Action.field_24342,
                 Text.literal(ev),
             );
         }
         if (ev.content) {
-            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, createText(ev));
+            return new HoverEvent(
+                HoverEvent.Action.field_24342,
+                createText(ev),
+            );
         }
 
         if (ev.entity)
-            return new HoverEvent(HoverEvent.Action.SHOW_ENTITY, ev.entity);
+            return new HoverEvent(HoverEvent.Action.field_24344, ev.entity);
         if (ev.item)
-            return new HoverEvent(HoverEvent.Action.SHOW_ITEM, ev.item);
+            return new HoverEvent(HoverEvent.Action.field_24343, ev.item);
         if (ev.text)
-            return new HoverEvent(HoverEvent.Action.SHOW_TEXT, ev.text);
+            return new HoverEvent(HoverEvent.Action.field_24342, ev.text);
     }
 }
 

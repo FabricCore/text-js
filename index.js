@@ -65,8 +65,6 @@ function createClickEvent(ev = {}) {
         if (ev.suggest)
             return new ClickEvent(ClickEvent.Action.field_11745, ev.suggest);
     }
-
-    return ev;
 }
 
 function createHoverEvent(ev = {}) {

@@ -78,7 +78,16 @@ function createHoverEvent(ev = {}) {
 
         if (ev.entity) return new HoverEvent.ShowEntity(ev.entity);
         if (ev.item) return new HoverEvent.ShowItem(ev.item);
-        if (ev.text) return new HoverEvent.ShowText(ev.text);
+        if (ev.text) {
+            if (typeof ev.text == "string") {
+                return new HoverEvent.ShowText(Text.literal(ev.text));
+            }
+            if (ev.text.content) {
+                return new HoverEvent.ShowText(createText(ev.text));
+            }
+
+            return new HoverEvent.ShowText(ev.text);
+        }
     } else if (
         HoverEvent.Action != undefined &&
         HoverEvent.Action.field_24342 != undefined
@@ -100,8 +109,22 @@ function createHoverEvent(ev = {}) {
             return new HoverEvent(HoverEvent.Action.field_24344, ev.entity);
         if (ev.item)
             return new HoverEvent(HoverEvent.Action.field_24343, ev.item);
-        if (ev.text)
+        if (ev.text) {
+            if (typeof ev.text == "string") {
+                return new HoverEvent(
+                    HoverEvent.Action.field_24342,
+                    Text.literal(ev.text),
+                );
+            }
+            if (ev.text.content) {
+                return new HoverEvent(
+                    HoverEvent.Action.field_24342,
+                    createText(ev.text),
+                );
+            }
+
             return new HoverEvent(HoverEvent.Action.field_24342, ev.text);
+        }
     }
 }
 

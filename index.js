@@ -75,7 +75,7 @@ function createHoverEvent(ev = {}) {
         if (typeof ev == "string") {
             return new HoverEvent.ShowText(Text.literal(ev));
         }
-        if (ev.content) {
+        if (ev.content || Array.isArray(ev)) {
             return new HoverEvent.ShowText(createText(ev));
         }
 
@@ -85,7 +85,7 @@ function createHoverEvent(ev = {}) {
             if (typeof ev.text == "string") {
                 return new HoverEvent.ShowText(Text.literal(ev.text));
             }
-            if (ev.text.content) {
+            if (ev.text.content || Array.isArray(ev)) {
                 return new HoverEvent.ShowText(createText(ev.text));
             }
 

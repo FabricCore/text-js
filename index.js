@@ -29,13 +29,16 @@ function createClickEvent(ev = {}) {
             if (ev.startsWith("/"))
                 return new ClickEvent.RunCommand(ev.slice(1));
             if (ev.startsWith("http://") || ev.startsWith("https://"))
-                return new ClickEvent.OpenUrl(ev);
+                return new ClickEvent.OpenUrl(new URI(ev));
         }
 
         if (ev.page) return new ClickEvent.ChangePage(ev.page);
         if (ev.copy) return new ClickEvent.CopyToClipboard(ev.copy);
         if (ev.file) return new ClickEvent.OpenFile(ev.file);
-        if (ev.url) return new ClickEvent.OpenUrl(new URI(ev.url));
+        if (ev.url)
+            return new ClickEvent.OpenUrl(
+                typeof ev.url == "string" ? new URI(ev.url) : ev.url,
+            );
         if (ev.run) return new ClickEvent.RunCommand(ev.run);
         if (ev.suggest) return new ClickEvent.SuggestCommand(ev.suggest);
     } else if (
@@ -219,10 +222,15 @@ function sendText(text = []) {
     }
 }
 
+function getString(textObj) {
+    return textObj.getString().replaceAll(/§./g, "");
+}
+
 module.exports = {
     createText,
     createStyle,
     createClickEvent,
     createHoverEvent,
     sendText,
+    getString,
 };

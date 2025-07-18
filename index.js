@@ -20,6 +20,9 @@ let { Text, Style, ClickEvent, HoverEvent } = Yarn.net.minecraft.text;
 let { Identifier } = Yarn.net.minecraft.util;
 
 let client = Yarn.net.minecraft.client.MinecraftClient.getInstance();
+let { MessageSignatureData } = Yarn.net.minecraft.network.message;
+let { MessageIndicator } = Yarn.net.minecraft.client.gui.hud;
+let { RandomUtils } = org.apache.commons.lang3;
 
 // missings fields in yarn mappings for some reason
 // so had to use raw field names
@@ -218,8 +221,23 @@ function createText(text = []) {
 function sendText(text = []) {
     let created = createText(text);
     if (client.player != null) {
-        client.inGameHud.getChatHud().addMessage(created);
+        let sig = new MessageSignatureData(RandomUtils.nextBytes(256));
+        let chat = client.inGameHud.getChatHud();
+
+        chat.addMessage(created, sig, MessageIndicator.system());
+
+        return {
+            sig,
+            remove: () => {
+                chat.removeMessage(sig);
+                chat.reset();
+            },
+        };
     }
+
+    return {
+        remove: () => {},
+    };
 }
 
 function getString(textObj) {
